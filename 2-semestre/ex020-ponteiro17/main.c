@@ -1,90 +1,51 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-void adicionarNum(int *array, int *size) {
-    if(*size<8) {
-        (*size)++;
-        for(int i = 0; i<(*size); i++) {
-            if(*(array+i) == -1) {
-                printf("==> Digite o valor que deseja adicionar: ");
-                scanf("%d", (array+i));
-                break;
-            }
-        }
+void adicionarNum(int *array, int *size, int *cont) {
+    if(*cont<8) {
+        printf("==> Digite o valor que deseja adicionar: ");
+        scanf("%d", (array+(*cont)));
+        (*cont)++;
     } else {
         printf("[AVISO]: o array-list esta cheio.\n");
     }
 }
 
-void removerNum(int *array, int *size) {
-    int numRemovido;
-    int encontrado = 0;
-
-    printf("Digite o numero que deseja remover: ");
-    scanf("%d", &numRemovido);
-    for(int i = 0; i<(*size); i++) {
-        if((*array+i)==numRemovido) {
-            encontrado = 1;
-            *(array+i) = *(array+i+1);
-            *(array+i+1) = -1;
-            (*size)--;
-            break;
+void removerNum(int *array, int *size, int *cont) {
+    int posicao;
+    if(*cont>0) {
+        printf("Digite a posicao do numero que deseja remover: ");
+        scanf("%d", &posicao);
+        if(posicao>=0 && posicao<*cont) {
+            (*cont)--;
+            for(int i = posicao; i<(*size); i++) {
+                *(array+i) = *(array+i+1);
+            }   
+        } else {
+            printf("[ERRO]: posicao invalida.\n");
         }
-    }
-    if((*size)==0) {
-        printf("[ERRO]: array esta vazio.\n");
-    }
-    if(encontrado!=1) {
-        printf("[ERRO]: valor nao encontrado.\n");
-    }
-
-    // int find;
-    // if(*size > 0) {
-    //     (*size)--;
-    //     int numRemovido;
-    //     printf("==> Digite o valor que deseja remover: ");
-    //     scanf("%d", &numRemovido);
-
-    //     if(*size==0) {
-    //         *(array)=-1;
-    //     } else {
-    //         for(int i = 0; i<(*size); i++) {
-    //             if(*(array+i) == numRemovido) {
-    //                 *(array+i) = *(array+i+1);
-    //                 *(array+i+1) = -1;
-    //                 find = 1;
-    //                 break;
-    //             } else {
-    //                 printf("[ERRO]: valor nao encontrado.\n");
-    //             }
-    //         }
-
-    //         if(find!=1) {
-    //             (*size)++;
-    //         }
-        // }
-    // } else {
-    //     printf("[ERRO]: nao existem numeros no array.\n");
-    // }
+    } else {
+        printf("[ERRO]: o array esta vazio.\n");
+    }    
 }
 
-void exibirArray(int *array, int *size) {
+void exibirArray(int *array, int *size, int *cont) {
     printf("===> Array-list = [ ");
-    for(int i = 0; i<(*size); i++) {
-        printf("%d ", *(array+i));
+    for(int i = 0; i<(*cont); i++) {
+        if(i!=(*cont)-1) {
+            printf("[%d]=%d , ", i, *(array+i));
+        } else {
+            printf("[%d]=%d ", i, *(array+i));
+        }
     }
     printf("]\n\n");
 }
 
 int main() {
     int size = 8;
+    int cont = 0;
     int opcao = 0;
     int *arrayList = (int*) malloc(sizeof(int) * size);
-
-    for(int i = 0; i<size; i++) {
-        *(arrayList+i) = -1;
-    }
-
-    size = 0;
 
     do {
         printf("+======================================================+\n");
@@ -98,15 +59,14 @@ int main() {
         printf("=> Opcao: ");
         scanf("%d", &opcao);
 
-
         switch(opcao) {
         case 1: 
-            adicionarNum(arrayList, &size);
-            exibirArray(arrayList, &size);
+            adicionarNum(arrayList, &size, &cont);
+            exibirArray(arrayList, &size, &cont);
             break;
         case 2:
-            removerNum(arrayList, &size);
-            exibirArray(arrayList, &size);
+            removerNum(arrayList, &size, &cont);
+            exibirArray(arrayList, &size, &cont);
             break;
         case 3:
             printf("Fim do programa!");
@@ -115,6 +75,8 @@ int main() {
             printf("[ERRO]: opcao invalida. Tente novamente.\n\n");
         }
     } while(opcao!=3);
+
+    free(arrayList);
 
     return 0;
 }
